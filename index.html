@@ -3,82 +3,207 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>碎片与石头最优购买计算器</title>
+  <title>杖剑传说 · 资源最优计算器</title>
   <style>
     :root {
-      --primary: #4f81bd;
-      --bg: #f4f6fb;
-      --card: #ffffff;
-      --border: #e0e0e0;
-      --accent: #2e7d32;
+      --bg: #0f1a24;
+      --panel: #172735;
+      --panel-light: #1f364a;
+      --gold: #e6c15a;
+      --cyan: #6fd3ff;
+      --text: #e8f0f7;
+      --muted: #9fb3c8;
+      --accent: #5ee6a8;
+      --danger: #ff7a7a;
     }
 
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
 
-    body { margin: 0; background: var(--bg); padding: 24px 12px; }
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 600px at 50% -200px, #1e3a52, var(--bg));
+      color: var(--text);
+      padding: 24px 12px 40px;
+    }
 
-    .container { max-width: 760px; margin: auto; }
+    .container {
+      max-width: 820px;
+      margin: auto;
+    }
 
-    h1 { text-align: center; color: var(--primary); margin-bottom: 20px; }
+    .title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--gold);
+      text-shadow: 0 2px 12px rgba(230,193,90,.4);
+      margin-bottom: 8px;
+    }
 
-    .card { background: var(--card); border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.08); padding: 20px; margin-bottom: 20px; }
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
 
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 16px; }
+    .panel {
+      background: linear-gradient(180deg, var(--panel-light), var(--panel));
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.45);
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,.05);
+    }
 
-    label { font-weight: 600; font-size: 14px; }
+    .panel h3 {
+      margin: 0 0 12px;
+      color: var(--cyan);
+      letter-spacing: .5px;
+    }
 
-    input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); font-size: 15px; }
+    .desc {
+      line-height: 1.7;
+      color: var(--text);
+      font-size: 15px;
+    }
 
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-    th, td { border-bottom: 1px solid var(--border); padding: 10px; text-align: center; font-size: 14px; }
-    th { background: #f0f4fa; }
+    .steps {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
 
-    .best { background: #e8f5e9; font-weight: bold; color: var(--accent); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap: 16px;
+    }
 
-    .result { font-size: 16px; margin-top: 12px; font-weight: bold; }
+    label {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      display: block;
+    }
 
-    footer { text-align: center; color: #888; font-size: 13px; margin-top: 20px; }
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: #0c1620;
+      color: var(--text);
+      font-size: 16px;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.6);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 10px 8px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      font-size: 14px;
+    }
+
+    th {
+      color: var(--cyan);
+      font-weight: 600;
+    }
+
+    .best {
+      background: linear-gradient(90deg, rgba(94,230,168,.15), transparent);
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .result {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .tip {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #7f93a8;
+      margin-top: 28px;
+    }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1>碎片 vs 石头 · 最优购买计算器</h1>
 
-  <div class="card">
+  <div class="title">杖剑传说 · 资源最优计算器</div>
+  <div class="subtitle">碎片 / 石头 · 最省金币方案一眼看穿</div>
+
+  <div class="panel">
+    <h3>📘 使用说明（分享必看）</h3>
+    <div class="desc">
+      本工具用于计算 <b>《杖剑传说》</b> 中碎片与石头的性价比，
+      帮你在合成、分解、商店购买前，快速判断 <b>哪种方式最省金币</b>。
+    </div>
+    <ol class="steps">
+      <li>填写你想要的 <b>目标石头数量</b></li>
+      <li>输入当前商店的 <b>石头价格</b></li>
+      <li>填写不同碎片方案（活动 / 礼包 / 常驻）</li>
+      <li>系统会自动算出 <b>最优方案</b></li>
+    </ol>
+  </div>
+
+  <div class="panel">
+    <h3>🎯 目标设定</h3>
     <div class="grid">
       <div>
         <label>目标石头数量</label>
         <input type="number" id="target" value="100" />
       </div>
       <div>
-        <label>直接买石头价格（10个）</label>
+        <label>直接购买石头价格（10个）</label>
         <input type="number" id="stonePrice" value="52" />
       </div>
     </div>
   </div>
 
-  <div class="card">
-    <h3>碎片方案对比（可修改）</h3>
+  <div class="panel">
+    <h3>🧩 碎片方案对比</h3>
     <table>
       <thead>
         <tr>
           <th>方案</th>
-          <th>碎片价格（10个）</th>
-          <th>1碎片→石头</th>
+          <th>碎片价(10)</th>
+          <th>转化率</th>
           <th>石头单价</th>
-          <th>获得目标石头成本</th>
+          <th>达标成本</th>
         </tr>
       </thead>
       <tbody id="rows"></tbody>
     </table>
   </div>
 
-  <div class="card">
+  <div class="panel">
     <div class="result" id="final"></div>
+    <div class="tip">※ 结果仅用于资源规划参考，不涉及概率与随机掉落</div>
   </div>
 
   <footer>
-    本工具支持网页 / 微信小程序逻辑复用 · 可本地保存
+    杖剑传说玩家自制工具 · 可放心分享给公会 / 群友使用
   </footer>
 </div>
 
@@ -89,9 +214,9 @@
   const final = document.getElementById('final');
 
   const schemes = [
-    { name: '碎片方案 A', price: 247, ratio: 2 },
-    { name: '碎片方案 B', price: 200, ratio: 2 },
-    { name: '碎片方案 C', price: 300, ratio: 3 }
+    { name: '常驻商店', price: 247, ratio: 2 },
+    { name: '活动礼包', price: 200, ratio: 2 },
+    { name: '限时兑换', price: 300, ratio: 3 }
   ];
 
   function calc() {
@@ -99,12 +224,11 @@
     const t = Number(target.value) || 0;
     const stoneUnit = (Number(stonePrice.value) || 0) / 10;
 
-    let best = { cost: t * stoneUnit, name: '直接买石头' };
+    let best = { cost: t * stoneUnit, name: '直接购买石头' };
 
     schemes.forEach((s, i) => {
       const unit = (s.price / 10) / s.ratio;
       const cost = unit * t;
-
       if (cost < best.cost) best = { cost, name: s.name };
 
       const tr = document.createElement('tr');
@@ -115,17 +239,15 @@
         <td>${unit.toFixed(2)}</td>
         <td>${cost.toFixed(2)}</td>
       `;
+      if (best.name === s.name) tr.classList.add('best');
       rows.appendChild(tr);
     });
 
-    const directCost = (t * stoneUnit).toFixed(2);
-
-    final.innerHTML = `目标 ${t} 个石头：<br>直接买石头成本 ${directCost} 元<br>👉 <span style="color:#2e7d32">最省方案：${best.name}（约 ${best.cost.toFixed(2)} 元）</span>`;
+    final.innerHTML = `目标 ${t} 个石头：<br>💰 最省方案是 <b>${best.name}</b>，约 <b>${best.cost.toFixed(2)}</b> 金币`;
   }
 
   target.addEventListener('input', calc);
   stonePrice.addEventListener('input', calc);
-
   calc();
 </script>
 </body>
