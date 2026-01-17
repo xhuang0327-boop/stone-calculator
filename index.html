@@ -1,56 +1,51 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>杖剑传说 · 石头最省计算器</title>
 
 <style>
 :root{
   --bg:#0b1220;
-  --panel:#121b2f;
-  --panel2:#182341;
+  --panel:#131c33;
+  --card:#1a2545;
   --gold:#e8c77a;
   --cyan:#6fd3ff;
-  --text:#dbe6ff;
-  --muted:#8fa2c9;
+  --text:#e5edff;
+  --muted:#9aa8cc;
 }
 
-*{box-sizing:border-box;}
+*{box-sizing:border-box}
 
 body{
   margin:0;
-  background:radial-gradient(1200px 600px at 50% -200px,#1d2a4a,#0b1220);
-  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial;
+  background:radial-gradient(1200px 600px at 50% -200px,#22315a,#0b1220);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
   color:var(--text);
 }
 
 .container{
-  max-width:420px;
-  margin:0 auto;
-  padding:20px 14px 40px;
+  max-width:430px;
+  margin:auto;
+  padding:18px 14px 40px;
 }
 
-.card{
-  background:linear-gradient(180deg,var(--panel2),var(--panel));
+.panel{
+  background:linear-gradient(180deg,#1a2545,#121b33);
   border-radius:18px;
-  padding:18px 16px 22px;
-  box-shadow:0 20px 50px rgba(0,0,0,.45);
+  padding:18px;
+  box-shadow:0 25px 60px rgba(0,0,0,.45);
 }
 
 .title{
   text-align:center;
   font-size:22px;
   color:var(--gold);
-  margin-bottom:18px;
-  letter-spacing:1px;
+  margin-bottom:16px;
 }
 
-.field{
-  margin-bottom:14px;
-}
-
+.field{margin-bottom:14px}
 .label{
   font-size:13px;
   color:var(--muted);
@@ -65,34 +60,40 @@ input{
   background:#0f172b;
   color:#fff;
   font-size:16px;
-  outline:none;
 }
-
-input::placeholder{color:#55638a;}
 
 button{
   width:100%;
-  margin-top:16px;
+  margin-top:12px;
   padding:12px;
-  font-size:16px;
   border-radius:14px;
   border:none;
+  font-size:16px;
+  font-weight:600;
   background:linear-gradient(135deg,#e8c77a,#cfa24a);
   color:#2a1f00;
-  font-weight:600;
 }
 
-.result{
-  margin-top:18px;
-  padding:14px;
-  border-radius:14px;
+.results{
+  margin-top:16px;
+  display:grid;
+  gap:12px;
+}
+
+.card{
   background:#0f172b;
-  line-height:1.6;
+  border-radius:14px;
+  padding:14px;
 }
 
-.result strong{
-  color:var(--gold);
-  font-size:17px;
+.card h3{
+  margin:0 0 6px;
+  font-size:15px;
+  color:var(--cyan);
+}
+
+.best{
+  border:1px solid var(--gold);
 }
 
 .footer{
@@ -106,65 +107,60 @@ button{
 
 <body>
 <div class="container">
-  <div class="card">
+  <div class="panel">
     <div class="title">石头最省计算器</div>
 
     <div class="field">
       <div class="label">目标石头数量</div>
-      <input id="target" type="number" inputmode="numeric" value="1000">
+      <input id="target" type="number" inputmode="numeric" placeholder="例如：1000">
     </div>
 
     <div class="field">
       <div class="label">碎片价格（10 个）</div>
-      <input id="fragPrice" type="number" inputmode="numeric" value="247">
+      <input id="fragPrice" type="number" inputmode="numeric" placeholder="例如：247">
     </div>
 
     <div class="field">
       <div class="label">石头价格（10 个）</div>
-      <input id="stonePrice" type="number" inputmode="numeric" value="59">
+      <input id="stonePrice" type="number" inputmode="numeric" placeholder="例如：52">
     </div>
 
-    <button onclick="calc()">计算最省方案</button>
+    <button onclick="calc()">开始计算</button>
 
-    <div class="result" id="result">
-      点击按钮开始计算
-    </div>
+    <div class="results" id="results"></div>
 
-    <div class="footer">
-      杖剑传说玩家专用 · 移动端稳态版
-    </div>
+    <div class="footer">杖剑传说玩家专用 · 多方案对比版</div>
   </div>
 </div>
 
 <script>
 function calc(){
-  const target = Number(document.getElementById("target").value);
-  const fragPrice = Number(document.getElementById("fragPrice").value);
-  const stonePrice = Number(document.getElementById("stonePrice").value);
+  const t = Number(target.value);
+  const fp = Number(fragPrice.value);
+  const sp = Number(stonePrice.value);
+  if(!t||!fp||!sp) return;
 
-  if(!target||!fragPrice||!stonePrice){
-    document.getElementById("result").innerText="请输入完整数值";
-    return;
-  }
-
-  // 假设：1 碎片 = 2 石头
   const stonePerFrag = 2;
 
-  const costByStone = (target/10)*stonePrice;
-  const fragNeed = target/stonePerFrag;
-  const costByFrag = (fragNeed/10)*fragPrice;
+  const direct = (t/10)*sp;
+  const byFrag = ((t/stonePerFrag)/10)*fp;
 
-  let text = "";
+  let html = "";
 
-  if(costByStone <= costByFrag){
-    text = `推荐方案：<strong>直接买石头</strong><br>
-    预计花费：${costByStone.toFixed(2)} 元`;
-  }else{
-    text = `推荐方案：<strong>买碎片再分解</strong><br>
-    预计花费：${costByFrag.toFixed(2)} 元`;
-  }
+  const best = direct < byFrag ? "direct" : "frag";
 
-  document.getElementById("result").innerHTML = text;
+  html += `
+    <div class="card ${best==='direct'?'best':''}">
+      <h3>方案 A：直接买石头</h3>
+      花费约 <strong>${direct.toFixed(2)}</strong> 元
+    </div>
+    <div class="card ${best==='frag'?'best':''}">
+      <h3>方案 B：买碎片分解</h3>
+      花费约 <strong>${byFrag.toFixed(2)}</strong> 元
+    </div>
+  `;
+
+  results.innerHTML = html;
 }
 </script>
 </body>
