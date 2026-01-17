@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>杖剑传说 · 最终比价计算器</title>
+<title>杖剑传说 · 单价性价比计算</title>
 
 <style>
 :root{
   --bg:#0b1220;
-  --panel:#131c33;
-  --card:#1a2545;
-  --gold:#e8c77a;
-  --cyan:#6fd3ff;
-  --text:#e5edff;
-  --muted:#9aa8cc;
-  --green:#07c160;
+  --card-bg:#1a2545; /* 深蓝卡片背景 */
+  --input-bg:#0f172b; /* 输入框背景 */
+  --gold:#e8c77a;     /* 金色文字 */
+  --cyan:#6fd3ff;     /* 亮蓝标题 */
+  --text:#e5edff;     /* 普通文字 */
+  --green:#00e09e;    /* 推荐绿色 */
+  --red:#ff6b6b;      /* 亏损红色 */
 }
 
 *{box-sizing:border-box}
@@ -23,273 +23,266 @@ body{
   background:radial-gradient(1200px 600px at 50% -200px,#22315a,#0b1220);
   font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;
   color:var(--text);
+  padding: 20px 15px;
 }
 
-.container{
-  max-width:430px;
-  margin:auto;
-  padding:18px 14px 40px;
+.container{ max-width: 450px; margin: 0 auto; }
+
+h1 {
+    text-align: center;
+    color: var(--gold);
+    font-size: 20px;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
 }
 
-.panel{
-  background:linear-gradient(180deg,#1a2545,#121b33);
-  border-radius:18px;
-  padding:18px;
-  box-shadow:0 25px 60px rgba(0,0,0,.45);
+/* 卡片通用样式 */
+.card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.05);
+    position: relative;
 }
 
-.title{
-  text-align:center;
-  font-size:20px;
-  color:var(--gold);
-  margin-bottom:20px;
-  font-weight: bold;
-}
-
-.field{margin-bottom:12px}
-.label{
-  font-size:13px;
-  color:var(--muted);
-  margin-bottom:6px;
-}
-
-input{
-  width:100%;
-  padding:12px 14px;
-  border-radius:12px;
-  border:1px solid #2b3a55;
-  background:#0f172b;
-  color:#fff;
-  font-size:16px;
-  outline: none;
-  transition: border 0.3s;
-}
-input:focus{
-  border-color: var(--cyan);
-}
-
-button{
-  width:100%;
-  margin-top:12px;
-  padding:12px;
-  border-radius:14px;
-  border:none;
-  font-size:16px;
-  font-weight:600;
-  background:linear-gradient(135deg,#e8c77a,#cfa24a);
-  color:#2a1f00;
-  cursor: pointer;
-}
-button:active{ opacity: 0.9; }
-
-.btn-add {
-    background: transparent;
-    border: 1px dashed var(--muted);
-    color: var(--muted);
-}
-
-.results{ margin-top:20px; border-top: 1px solid #2b3a55; padding-top: 20px;}
-
-.card{
-  background:#0f172b;
-  border-radius:14px;
-  padding:14px;
-  margin-bottom:12px;
-  position: relative;
-}
-
-.card h3{
-  margin:0 0 10px;
-  font-size:15px;
-  color:var(--cyan);
-  display: flex;
-  justify-content: space-between;
-}
-
-/* 冠军样式 */
-.best{
-  border:1px solid var(--gold);
-  background: rgba(232, 199, 122, 0.1);
-}
-.best::after {
-    content: "最省钱";
-    position: absolute;
-    top: -10px;
-    right: 10px;
-    background: var(--gold);
-    color: #000;
-    font-size: 12px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-}
-
-.result-row {
+/* 标题栏 */
+.card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 15px;
 }
-.cost-display {
-    text-align: right;
-}
-.cost-val {
-    color: var(--gold);
-    font-size: 18px;
+.card-title {
+    color: var(--cyan);
+    font-size: 16px;
     font-weight: bold;
 }
-.diff-val {
+
+/* 输入框组 */
+.input-group { margin-bottom: 12px; }
+.label { font-size: 12px; color: #889ec5; margin-bottom: 5px; }
+input {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid #2b3a55;
+    color: #fff;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+    transition: 0.2s;
+}
+input:focus { border-color: var(--gold); }
+
+/* 按钮 */
+.btn-main {
+    width: 100%;
+    background: linear-gradient(135deg, #e8c77a, #cfa24a);
+    color: #2a1f00;
+    font-weight: bold;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+.btn-add {
+    width: 100%;
+    background: transparent;
+    border: 1px dashed #4a5b80;
+    color: #889ec5;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+.btn-del {
+    color: var(--red);
     font-size: 12px;
-    color: #ff6b6b;
+    background: none;
+    border: none;
+    padding: 5px;
 }
 
-.footer{
-  text-align:center;
-  font-size:12px;
-  color:#6f7fa6;
-  margin-top:14px;
+/* 结果展示区 */
+#resultArea { margin-top: 30px; display: none; }
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
+.result-item:last-child { border: none; }
+
+.r-left h3 { margin: 0 0 4px 0; font-size: 15px; }
+.r-left span { font-size: 12px; color: #889ec5; }
+
+.r-right { text-align: right; }
+.unit-price { font-size: 20px; font-weight: bold; color: var(--gold); }
+.unit-label { font-size: 10px; color: #889ec5; }
+
+/* 冠军标记 */
+.winner { position: relative; }
+.winner::after {
+    content: "最划算";
+    position: absolute;
+    top: 0; right: 0;
+    background: var(--green);
+    color: #000;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.tag-loss {
+    font-size: 11px;
+    color: var(--red);
+    background: rgba(255, 107, 107, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 5px;
+}
+
 </style>
 </head>
-
 <body>
+
 <div class="container">
-  <div class="panel">
-    <div class="title">💎 石头综合比价器</div>
+    <h1>💎 杖剑传说 · 采购决策器</h1>
 
-    <div class="field">
-      <div class="label" style="color:#fff;">🎯 目标石头数量</div>
-      <input id="target" type="number" inputmode="numeric" value="1000" placeholder="例如：1000">
-    </div>
-
-    <div class="card" style="border: 1px solid #3d4c70;">
-        <h3>🛒 方案A：直接买成品</h3>
-        <div class="field">
-            <div class="label">石头市场价（10个）</div>
-            <input id="stonePrice" type="number" inputmode="numeric" placeholder="例如：52">
+    <div class="card" style="border: 1px solid #4a5b80;">
+        <div class="card-header">
+            <span class="card-title">🛒 方式A：直接买石头</span>
+        </div>
+        <div class="input-group">
+            <div class="label">市场价 (10个石头的价格)</div>
+            <input type="number" id="stonePrice" placeholder="例如：52" value="52">
         </div>
     </div>
 
-    <div id="fragPlans"></div>
+    <div id="fragList"></div>
 
-    <button class="btn-add" onclick="addPlan()">+ 添加另一种碎片方案</button>
-    <button onclick="calc()">🚀 开始计算</button>
+    <button class="btn-add" onclick="addFragPlan()">+ 添加另一种碎片方案</button>
+    <button class="btn-main" onclick="calculate()">🚀 开始计算性价比</button>
 
-    <div class="results" id="results"></div>
-    <div class="footer">杖剑传说 · 最终版</div>
-  </div>
+    <div class="card" id="resultArea">
+        <div class="card-header">
+            <span class="card-title" style="color:var(--gold)">🏆 计算结果 (按单价排序)</span>
+        </div>
+        <div id="resultContent"></div>
+    </div>
 </div>
 
 <script>
-let planCount = 0;
-// 默认初始化给一个碎片方案，方便直接填
+// 初始化：默认加一个碎片方案
 window.onload = function() {
-    addPlan(); 
-}
+    addFragPlan(247, 2); // 默认填入你的示例数据
+};
 
-function addPlan(){
-  planCount++;
-  const id = planCount;
+let planIndex = 0;
 
-  const html = `
-    <div class="card" id="plan-${id}">
-      <h3>🧩 碎片方案 ${id} 
-          <span onclick="removePlan(${id})" style="color:#666;font-size:12px;font-weight:normal;cursor:pointer;">✕ 删除</span>
-      </h3>
-      <div class="field">
-        <div class="label">碎片价格（10个）</div>
-        <input id="fragPrice-${id}" type="number" inputmode="numeric" placeholder="例如：247">
-      </div>
-      <div class="field">
-        <div class="label">每个碎片分解成多少石头</div>
-        <input id="fragToStone-${id}" type="number" inputmode="numeric" placeholder="例如：2">
-      </div>
-    </div>
-  `;
-  document.getElementById('fragPlans').insertAdjacentHTML('beforeend', html);
-}
-
-function removePlan(id){
-  const el = document.getElementById(`plan-${id}`);
-  if(el) el.remove();
-}
-
-function calc(){
-  const target = Number(document.getElementById("target").value);
-  const resultsDiv = document.getElementById("results");
-
-  if(!target){
-    resultsDiv.innerHTML = `<div style="text-align:center;color:#ff6b6b">⚠️ 请输入目标石头数量</div>`;
-    return;
-  }
-
-  const plans = [];
-
-  // 1. 获取直接买石头的价格
-  const stonePrice = Number(document.getElementById("stonePrice").value);
-  if(stonePrice){
-      const cost = (target / 10) * stonePrice;
-      plans.push({
-          name: "直接买成品石头",
-          type: "stone",
-          cost: cost,
-          detail: `单价 ${(stonePrice/10).toFixed(2)}`
-      });
-  }
-
-  // 2. 获取所有碎片方案
-  const fragCards = document.querySelectorAll('[id^="plan-"]');
-  fragCards.forEach((card, index) => {
-      // 从ID中提取数字
-      const idStr = card.id.split('-')[1]; 
-      const fp = Number(document.getElementById(`fragPrice-${idStr}`).value);
-      const fts = Number(document.getElementById(`fragToStone-${idStr}`).value);
-
-      if(fp && fts){
-          const cost = (target / (fts * 10)) * fp; // 修正算法：10个碎片产出 10*fts 个石头
-          plans.push({
-              name: `碎片方案 ${index + 1}`,
-              type: "frag",
-              cost: cost,
-              detail: `单价 ${(fp/(fts*10)).toFixed(2)}`
-          });
-      }
-  });
-
-  if(plans.length === 0){
-    resultsDiv.innerHTML = `<div style="text-align:center;color:#ff6b6b">⚠️ 请至少输入一个有效的价格方案</div>`;
-    return;
-  }
-
-  // 3. 排序
-  plans.sort((a,b) => a.cost - b.cost);
-  const bestCost = plans[0].cost;
-
-  // 4. 生成结果HTML
-  let html = "";
-  plans.forEach((p, index) => {
-    const isBest = index === 0;
-    const diff = p.cost - bestCost;
-    
-    html += `
-      <div class="card ${isBest ? 'best' : ''}">
-        <div class="result-row">
-            <div>
-                <div style="color:${isBest ? 'var(--gold)' : '#fff'};font-weight:bold;">${p.name}</div>
-                <div style="font-size:12px;color:#888;">${p.detail} 元/个</div>
-            </div>
-            <div class="cost-display">
-                <div class="cost-val">￥${Math.round(p.cost)}</div>
-                ${!isBest ? `<div class="diff-val">多花 ${Math.round(diff)}</div>` : ''}
-            </div>
+function addFragPlan(defaultPrice = '', defaultRatio = '') {
+    planIndex++;
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.id = 'plan-' + planIndex;
+    div.innerHTML = `
+        <div class="card-header">
+            <span class="card-title">🧩 碎片方案 ${planIndex}</span>
+            <button class="btn-del" onclick="this.closest('.card').remove()">✕ 删除</button>
         </div>
-      </div>
+        <div class="input-group">
+            <div class="label">碎片价格 (10个一组)</div>
+            <input type="number" class="f-price" placeholder="例如：300" value="${defaultPrice}">
+        </div>
+        <div class="input-group">
+            <div class="label">1个碎片能分解出几个石头？</div>
+            <input type="number" class="f-ratio" placeholder="例如：2" value="${defaultRatio}">
+        </div>
     `;
-  });
+    document.getElementById('fragList').appendChild(div);
+}
 
-  resultsDiv.innerHTML = html;
-  // 自动滚动到底部看结果
-  resultsDiv.scrollIntoView({behavior: "smooth"});
+function calculate() {
+    let results = [];
+
+    // 1. 获取直接买石头的单价
+    const sPrice = parseFloat(document.getElementById('stonePrice').value);
+    if (sPrice > 0) {
+        results.push({
+            name: "直接买石头",
+            unitCost: sPrice / 10, // 10个的价格除以10
+            type: "stone"
+        });
+    }
+
+    // 2. 获取碎片方案单价
+    const plans = document.querySelectorAll('#fragList .card');
+    plans.forEach((plan, idx) => {
+        const title = plan.querySelector('.card-title').innerText;
+        const pPrice = parseFloat(plan.querySelector('.f-price').value);
+        const pRatio = parseFloat(plan.querySelector('.f-ratio').value);
+
+        if (pPrice > 0 && pRatio > 0) {
+            // 公式：10个碎片价格 / (10 * 每个碎片产出的石头量)
+            const unitCost = pPrice / (10 * pRatio);
+            results.push({
+                name: title,
+                unitCost: unitCost,
+                type: "frag"
+            });
+        }
+    });
+
+    // 3. 排序 (越小越好)
+    results.sort((a, b) => a.unitCost - b.unitCost);
+
+    // 4. 渲染
+    const resBox = document.getElementById('resultArea');
+    const resContent = document.getElementById('resultContent');
+    resContent.innerHTML = '';
+
+    if (results.length === 0) {
+        alert("请至少输入一个有效的价格！");
+        return;
+    }
+
+    const bestPrice = results[0].unitCost;
+
+    results.forEach((item, index) => {
+        const isBest = index === 0;
+        const diff = item.unitCost - bestPrice;
+        // 计算亏损百分比
+        const percent = bestPrice > 0 ? ((diff / bestPrice) * 100).toFixed(0) : 0;
+        
+        let html = `
+            <div class="result-item ${isBest ? 'winner' : ''}">
+                <div class="r-left">
+                    <h3 style="color: ${isBest ? 'var(--green)' : 'var(--text)'}">
+                        ${item.name}
+                        ${!isBest ? `<span class="tag-loss">贵了${percent}%</span>` : ''}
+                    </h3>
+                    <span>${item.type === 'stone' ? '成品购买' : '分解合成'}</span>
+                </div>
+                <div class="r-right">
+                    <div class="unit-price" style="color:${isBest ? 'var(--green)' : 'var(--gold)'}">
+                        ${item.unitCost.toFixed(2)}
+                    </div>
+                    <div class="unit-label">晨星 / 每个石头</div>
+                </div>
+            </div>
+        `;
+        resContent.innerHTML += html;
+    });
+
+    resBox.style.display = 'block';
+    // 滚动到底部
+    resBox.scrollIntoView({ behavior: 'smooth' });
 }
 </script>
+
 </body>
 </html>
