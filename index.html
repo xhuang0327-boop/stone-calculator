@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>杖剑传说 · 石头最省计算器</title>
+<title>杖剑传说 · 多碎片方案对比</title>
 
 <style>
 :root{
@@ -17,7 +17,6 @@
 }
 
 *{box-sizing:border-box}
-
 body{
   margin:0;
   background:radial-gradient(1200px 600px at 50% -200px,#22315a,#0b1220);
@@ -76,14 +75,13 @@ button{
 
 .results{
   margin-top:16px;
-  display:grid;
-  gap:12px;
 }
 
 .card{
   background:#0f172b;
   border-radius:14px;
   padding:14px;
+  margin-bottom:12px;
 }
 
 .card h3{
@@ -95,7 +93,6 @@ button{
 .best{
   border:1px solid var(--gold);
 }
-
 .footer{
   text-align:center;
   font-size:12px;
@@ -108,57 +105,112 @@ button{
 <body>
 <div class="container">
   <div class="panel">
-    <div class="title">石头最省计算器</div>
+    <div class="title">石头最省计算器（多方案对比）</div>
 
     <div class="field">
       <div class="label">目标石头数量</div>
       <input id="target" type="number" inputmode="numeric" placeholder="例如：1000">
     </div>
 
-    <div class="field">
-      <div class="label">碎片价格（10 个）</div>
-      <input id="fragPrice" type="number" inputmode="numeric" placeholder="例如：247">
-    </div>
+    <!-- 碎片方案 -->
+    <div id="fragPlans"></div>
 
-    <div class="field">
-      <div class="label">石头价格（10 个）</div>
-      <input id="stonePrice" type="number" inputmode="numeric" placeholder="例如：52">
-    </div>
-
+    <button onclick="addPlan()">添加碎片方案</button>
     <button onclick="calc()">开始计算</button>
 
     <div class="results" id="results"></div>
-
-    <div class="footer">杖剑传说玩家专用 · 多方案对比版</div>
+    <div class="footer">杖剑传说玩家专用 · 多碎片方案对比版</div>
   </div>
 </div>
 
 <script>
-function calc(){
-  const t = Number(target.value);
-  const fp = Number(fragPrice.value);
-  const sp = Number(stonePrice.value);
-  if(!t||!fp||!sp) return;
+let planCount = 0;
+const maxPlans = 5;
 
-  const stonePerFrag = 2;
+function addPlan(){
+  if(planCount >= maxPlans) return;
 
-  const direct = (t/10)*sp;
-  const byFrag = ((t/stonePerFrag)/10)*fp;
+  planCount++;
+  const id = planCount;
 
-  let html = "";
-
-  const best = direct < byFrag ? "direct" : "frag";
-
-  html += `
-    <div class="card ${best==='direct'?'best':''}">
-      <h3>方案 A：直接买石头</h3>
-      花费约 <strong>${direct.toFixed(2)}</strong> 元
-    </div>
-    <div class="card ${best==='frag'?'best':''}">
-      <h3>方案 B：买碎片分解</h3>
-      花费约 <strong>${byFrag.toFixed(2)}</strong> 元
+  const html = `
+    <div class="card" id="plan-${id}">
+      <h3>碎片方案 ${id}</h3>
+      <div class="field">
+        <div class="label">碎片价格（10个）</div>
+        <input id="fragPrice-${id}" type="number" inputmode="numeric" placeholder="例如：247">
+      </div>
+      <div class="field">
+        <div class="label">每个碎片分解成多少石头</div>
+        <input id="fragToStone-${id}" type="number" inputmode="numeric" placeholder="例如：2">
+      </div>
+      <button onclick="removePlan(${id})" style="background:#2b2f3a;margin-top:10px;">删除该方案</button>
     </div>
   `;
+  fragPlans.insertAdjacentHTML('beforeend', html);
+}
+
+function removePlan(id){
+  const el = document.getElementById(`plan-${id}`);
+  if(el) el.remove();
+}
+
+function calc(){
+  const target = Number(document.getElementById("target").value);
+  if(!target){
+    results.innerHTML = `<div class="card">请输入目标石头数量</div>`;
+    return;
+  }
+
+  const plans = [];
+
+  // 读取碎片方案
+  for(let i=1;i<=planCount;i++){
+    const fp = Number(document.getElementById(`fragPrice-${i}`)?.value);
+    const fts = Number(document.getElementById(`fragToStone-${i}`)?.value);
+    if(fp && fts){
+      const cost = (target/fts/10)*fp;
+      plans.push({
+        name:`碎片方案 ${i}`,
+        type:'frag',
+        cost,
+        price:fp,
+        rate:fts
+      });
+    }
+  }
+
+  // 直接买石头方案
+  const sp = Number(document.getElementById("stonePrice")?.value);
+  if(sp){
+    const cost = (target/10)*sp;
+    plans.push({
+      name:"直接买石头",
+      type:'stone',
+      cost,
+      price:sp,
+      rate:1
+    });
+  }
+
+  if(plans.length===0){
+    results.innerHTML = `<div class="card">请至少填写一个方案（碎片或石头）</div>`;
+    return;
+  }
+
+  plans.sort((a,b)=>a.cost-b.cost);
+  const best = plans[0];
+
+  let html = "";
+  plans.forEach(p=>{
+    html += `
+      <div class="card ${p===best?'best':''}">
+        <h3>${p.name}${p.type==='frag'?`（每碎片→${p.rate}石）`:''}</h3>
+        <div>价格（10个）：${p.price}</div>
+        <div>预计花费：<strong>${p.cost.toFixed(2)}</strong> 元</div>
+      </div>
+    `;
+  });
 
   results.innerHTML = html;
 }
