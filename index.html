@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>杖剑传说 · 多碎片方案对比</title>
+<title>杖剑传说 · 最终比价计算器</title>
 
 <style>
 :root{
@@ -14,6 +14,7 @@
   --cyan:#6fd3ff;
   --text:#e5edff;
   --muted:#9aa8cc;
+  --green:#07c160;
 }
 
 *{box-sizing:border-box}
@@ -39,12 +40,13 @@ body{
 
 .title{
   text-align:center;
-  font-size:22px;
+  font-size:20px;
   color:var(--gold);
-  margin-bottom:16px;
+  margin-bottom:20px;
+  font-weight: bold;
 }
 
-.field{margin-bottom:14px}
+.field{margin-bottom:12px}
 .label{
   font-size:13px;
   color:var(--muted);
@@ -55,10 +57,15 @@ input{
   width:100%;
   padding:12px 14px;
   border-radius:12px;
-  border:none;
+  border:1px solid #2b3a55;
   background:#0f172b;
   color:#fff;
   font-size:16px;
+  outline: none;
+  transition: border 0.3s;
+}
+input:focus{
+  border-color: var(--cyan);
 }
 
 button{
@@ -71,28 +78,70 @@ button{
   font-weight:600;
   background:linear-gradient(135deg,#e8c77a,#cfa24a);
   color:#2a1f00;
+  cursor: pointer;
+}
+button:active{ opacity: 0.9; }
+
+.btn-add {
+    background: transparent;
+    border: 1px dashed var(--muted);
+    color: var(--muted);
 }
 
-.results{
-  margin-top:16px;
-}
+.results{ margin-top:20px; border-top: 1px solid #2b3a55; padding-top: 20px;}
 
 .card{
   background:#0f172b;
   border-radius:14px;
   padding:14px;
   margin-bottom:12px;
+  position: relative;
 }
 
 .card h3{
-  margin:0 0 6px;
+  margin:0 0 10px;
   font-size:15px;
   color:var(--cyan);
+  display: flex;
+  justify-content: space-between;
 }
 
+/* 冠军样式 */
 .best{
   border:1px solid var(--gold);
+  background: rgba(232, 199, 122, 0.1);
 }
+.best::after {
+    content: "最省钱";
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    background: var(--gold);
+    color: #000;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.cost-display {
+    text-align: right;
+}
+.cost-val {
+    color: var(--gold);
+    font-size: 18px;
+    font-weight: bold;
+}
+.diff-val {
+    font-size: 12px;
+    color: #ff6b6b;
+}
+
 .footer{
   text-align:center;
   font-size:12px;
@@ -105,37 +154,47 @@ button{
 <body>
 <div class="container">
   <div class="panel">
-    <div class="title">石头最省计算器（多方案对比）</div>
+    <div class="title">💎 石头综合比价器</div>
 
     <div class="field">
-      <div class="label">目标石头数量</div>
-      <input id="target" type="number" inputmode="numeric" placeholder="例如：1000">
+      <div class="label" style="color:#fff;">🎯 目标石头数量</div>
+      <input id="target" type="number" inputmode="numeric" value="1000" placeholder="例如：1000">
     </div>
 
-    <!-- 碎片方案 -->
+    <div class="card" style="border: 1px solid #3d4c70;">
+        <h3>🛒 方案A：直接买成品</h3>
+        <div class="field">
+            <div class="label">石头市场价（10个）</div>
+            <input id="stonePrice" type="number" inputmode="numeric" placeholder="例如：52">
+        </div>
+    </div>
+
     <div id="fragPlans"></div>
 
-    <button onclick="addPlan()">添加碎片方案</button>
-    <button onclick="calc()">开始计算</button>
+    <button class="btn-add" onclick="addPlan()">+ 添加另一种碎片方案</button>
+    <button onclick="calc()">🚀 开始计算</button>
 
     <div class="results" id="results"></div>
-    <div class="footer">杖剑传说玩家专用 · 多碎片方案对比版</div>
+    <div class="footer">杖剑传说 · 最终版</div>
   </div>
 </div>
 
 <script>
 let planCount = 0;
-const maxPlans = 5;
+// 默认初始化给一个碎片方案，方便直接填
+window.onload = function() {
+    addPlan(); 
+}
 
 function addPlan(){
-  if(planCount >= maxPlans) return;
-
   planCount++;
   const id = planCount;
 
   const html = `
     <div class="card" id="plan-${id}">
-      <h3>碎片方案 ${id}</h3>
+      <h3>🧩 碎片方案 ${id} 
+          <span onclick="removePlan(${id})" style="color:#666;font-size:12px;font-weight:normal;cursor:pointer;">✕ 删除</span>
+      </h3>
       <div class="field">
         <div class="label">碎片价格（10个）</div>
         <input id="fragPrice-${id}" type="number" inputmode="numeric" placeholder="例如：247">
@@ -144,10 +203,9 @@ function addPlan(){
         <div class="label">每个碎片分解成多少石头</div>
         <input id="fragToStone-${id}" type="number" inputmode="numeric" placeholder="例如：2">
       </div>
-      <button onclick="removePlan(${id})" style="background:#2b2f3a;margin-top:10px;">删除该方案</button>
     </div>
   `;
-  fragPlans.insertAdjacentHTML('beforeend', html);
+  document.getElementById('fragPlans').insertAdjacentHTML('beforeend', html);
 }
 
 function removePlan(id){
@@ -157,62 +215,80 @@ function removePlan(id){
 
 function calc(){
   const target = Number(document.getElementById("target").value);
+  const resultsDiv = document.getElementById("results");
+
   if(!target){
-    results.innerHTML = `<div class="card">请输入目标石头数量</div>`;
+    resultsDiv.innerHTML = `<div style="text-align:center;color:#ff6b6b">⚠️ 请输入目标石头数量</div>`;
     return;
   }
 
   const plans = [];
 
-  // 读取碎片方案
-  for(let i=1;i<=planCount;i++){
-    const fp = Number(document.getElementById(`fragPrice-${i}`)?.value);
-    const fts = Number(document.getElementById(`fragToStone-${i}`)?.value);
-    if(fp && fts){
-      const cost = (target/fts/10)*fp;
+  // 1. 获取直接买石头的价格
+  const stonePrice = Number(document.getElementById("stonePrice").value);
+  if(stonePrice){
+      const cost = (target / 10) * stonePrice;
       plans.push({
-        name:`碎片方案 ${i}`,
-        type:'frag',
-        cost,
-        price:fp,
-        rate:fts
+          name: "直接买成品石头",
+          type: "stone",
+          cost: cost,
+          detail: `单价 ${(stonePrice/10).toFixed(2)}`
       });
-    }
   }
 
-  // 直接买石头方案
-  const sp = Number(document.getElementById("stonePrice")?.value);
-  if(sp){
-    const cost = (target/10)*sp;
-    plans.push({
-      name:"直接买石头",
-      type:'stone',
-      cost,
-      price:sp,
-      rate:1
-    });
-  }
+  // 2. 获取所有碎片方案
+  const fragCards = document.querySelectorAll('[id^="plan-"]');
+  fragCards.forEach((card, index) => {
+      // 从ID中提取数字
+      const idStr = card.id.split('-')[1]; 
+      const fp = Number(document.getElementById(`fragPrice-${idStr}`).value);
+      const fts = Number(document.getElementById(`fragToStone-${idStr}`).value);
 
-  if(plans.length===0){
-    results.innerHTML = `<div class="card">请至少填写一个方案（碎片或石头）</div>`;
+      if(fp && fts){
+          const cost = (target / (fts * 10)) * fp; // 修正算法：10个碎片产出 10*fts 个石头
+          plans.push({
+              name: `碎片方案 ${index + 1}`,
+              type: "frag",
+              cost: cost,
+              detail: `单价 ${(fp/(fts*10)).toFixed(2)}`
+          });
+      }
+  });
+
+  if(plans.length === 0){
+    resultsDiv.innerHTML = `<div style="text-align:center;color:#ff6b6b">⚠️ 请至少输入一个有效的价格方案</div>`;
     return;
   }
 
-  plans.sort((a,b)=>a.cost-b.cost);
-  const best = plans[0];
+  // 3. 排序
+  plans.sort((a,b) => a.cost - b.cost);
+  const bestCost = plans[0].cost;
 
+  // 4. 生成结果HTML
   let html = "";
-  plans.forEach(p=>{
+  plans.forEach((p, index) => {
+    const isBest = index === 0;
+    const diff = p.cost - bestCost;
+    
     html += `
-      <div class="card ${p===best?'best':''}">
-        <h3>${p.name}${p.type==='frag'?`（每碎片→${p.rate}石）`:''}</h3>
-        <div>价格（10个）：${p.price}</div>
-        <div>预计花费：<strong>${p.cost.toFixed(2)}</strong> 元</div>
+      <div class="card ${isBest ? 'best' : ''}">
+        <div class="result-row">
+            <div>
+                <div style="color:${isBest ? 'var(--gold)' : '#fff'};font-weight:bold;">${p.name}</div>
+                <div style="font-size:12px;color:#888;">${p.detail} 元/个</div>
+            </div>
+            <div class="cost-display">
+                <div class="cost-val">￥${Math.round(p.cost)}</div>
+                ${!isBest ? `<div class="diff-val">多花 ${Math.round(diff)}</div>` : ''}
+            </div>
+        </div>
       </div>
     `;
   });
 
-  results.innerHTML = html;
+  resultsDiv.innerHTML = html;
+  // 自动滚动到底部看结果
+  resultsDiv.scrollIntoView({behavior: "smooth"});
 }
 </script>
 </body>
